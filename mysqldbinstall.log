@@ -1,0 +1,403 @@
+login as: osboxes
+osboxes@192.168.1.241's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Last login: Sun Jan 24 16:26:39 2021
+
+[osboxes@osboxes ~]$ sudo su -
+[sudo] password for osboxes:
+[root@osboxes ~]# sed -i 's/osboxes/mysqldbhost/g' /etc/hostname
+[root@osboxes ~]# cat /etc/hostname
+mysqldbhost
+[root@osboxes ~]# vi /etc/hosts
+[root@osboxes ~]# cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 mysqldbhost mysqldbhost.example.com
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6 mysqldbhost mysqldbhost.example.com
+192.168.1.241 mysqldbhost mysqldbhost.example.com
+
+[root@osboxes ~]# systemctl stop firewalld
+
+[root@osboxes ~]# systemctl disable firewalld
+Removed /etc/systemd/system/multi-user.target.wants/firewalld.service.
+Removed /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
+[root@osboxes ~]# wget https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm
+--2021-01-24 16:53:04--  https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm
+Resolving dev.mysql.com (dev.mysql.com)... 137.254.60.11
+Connecting to dev.mysql.com (dev.mysql.com)|137.254.60.11|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://repo.mysql.com//mysql80-community-release-el8-1.noarch.rpm [following]
+--2021-01-24 16:53:05--  https://repo.mysql.com//mysql80-community-release-el8-1.noarch.rpm
+Resolving repo.mysql.com (repo.mysql.com)... 96.17.65.60
+Connecting to repo.mysql.com (repo.mysql.com)|96.17.65.60|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 30388 (30K) [application/x-redhat-package-manager]
+Saving to: ‘mysql80-community-release-el8-1.noarch.rpm’
+
+mysql80-community-release-el8-1.noarch. 100%[============================================================================>]  29.68K  --.-KB/s    in 0.03s
+
+2021-01-24 16:53:05 (879 KB/s) - ‘mysql80-community-release-el8-1.noarch.rpm’ saved [30388/30388]
+
+[root@osboxes ~]# sudo dnf install mysql-server
+Last metadata expiration check: 0:20:47 ago on Sun 24 Jan 2021 04:32:34 PM EST.
+Dependencies resolved.
+=============================================================================================================================================================
+ Package                                     Architecture            Version                                                Repository                  Size
+=============================================================================================================================================================
+Installing:
+ mysql-server                                x86_64                  8.0.21-1.module_el8.2.0+493+63b41e36                   AppStream                   22 M
+Installing dependencies:
+ mariadb-connector-c-config                  noarch                  3.1.11-2.el8_3                                         AppStream                   15 k
+ mecab                                       x86_64                  0.996-1.module_el8.2.0+493+63b41e36.9                  AppStream                  393 k
+ mysql                                       x86_64                  8.0.21-1.module_el8.2.0+493+63b41e36                   AppStream                   12 M
+ mysql-common                                x86_64                  8.0.21-1.module_el8.2.0+493+63b41e36                   AppStream                  148 k
+ mysql-errmsg                                x86_64                  8.0.21-1.module_el8.2.0+493+63b41e36                   AppStream                  581 k
+ protobuf-lite                               x86_64                  3.5.0-13.el8                                           AppStream                  149 k
+Enabling module streams:
+ mysql                                                               8.0
+
+Transaction Summary
+=============================================================================================================================================================
+Install  7 Packages
+
+Total download size: 35 M
+Installed size: 182 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/7): mariadb-connector-c-config-3.1.11-2.el8_3.noarch.rpm                                                                  109 kB/s |  15 kB     00:00
+(2/7): mysql-common-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64.rpm                                                          1.2 MB/s | 148 kB     00:00
+(3/7): mecab-0.996-1.module_el8.2.0+493+63b41e36.9.x86_64.rpm                                                                1.5 MB/s | 393 kB     00:00
+(4/7): mysql-errmsg-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64.rpm                                                          4.6 MB/s | 581 kB     00:00
+(5/7): protobuf-lite-3.5.0-13.el8.x86_64.rpm                                                                                 1.8 MB/s | 149 kB     00:00
+(6/7): mysql-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64.rpm                                                                  10 MB/s |  12 MB     00:01
+(7/7): mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64.rpm                                                           15 MB/s |  22 MB     00:01
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                         18 MB/s |  35 MB     00:01
+warning: /var/cache/dnf/AppStream-a520ed22b0a8a736/packages/mariadb-connector-c-config-3.1.11-2.el8_3.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID 8483c65d: NOKEY
+CentOS-8 - AppStream                                                                                                         1.6 MB/s | 1.6 kB     00:00
+Importing GPG key 0x8483C65D:
+ Userid     : "CentOS (CentOS Official Signing Key) <security@centos.org>"
+ Fingerprint: 99DB 70FA E1D7 CE22 7FB6 4882 05B5 55B3 8483 C65D
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+Is this ok [y/N]: y
+Key imported successfully
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                                                                                     1/1
+  Installing       : mariadb-connector-c-config-3.1.11-2.el8_3.noarch                                                                                    1/7
+  Installing       : mysql-common-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            2/7
+  Installing       : mysql-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                                   3/7
+  Installing       : mysql-errmsg-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            4/7
+  Installing       : protobuf-lite-3.5.0-13.el8.x86_64                                                                                                   5/7
+  Installing       : mecab-0.996-1.module_el8.2.0+493+63b41e36.9.x86_64                                                                                  6/7
+  Running scriptlet: mecab-0.996-1.module_el8.2.0+493+63b41e36.9.x86_64                                                                                  6/7
+  Running scriptlet: mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            7/7
+  Installing       : mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            7/7
+  Running scriptlet: mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            7/7
+ValueError: File context for /var/log/mysql(/.*)? already defined
+
+  Verifying        : mariadb-connector-c-config-3.1.11-2.el8_3.noarch                                                                                    1/7
+  Verifying        : mecab-0.996-1.module_el8.2.0+493+63b41e36.9.x86_64                                                                                  2/7
+  Verifying        : mysql-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                                   3/7
+  Verifying        : mysql-common-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            4/7
+  Verifying        : mysql-errmsg-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            5/7
+  Verifying        : mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                                                                            6/7
+  Verifying        : protobuf-lite-3.5.0-13.el8.x86_64                                                                                                   7/7
+Installed products updated.
+
+Installed:
+  mariadb-connector-c-config-3.1.11-2.el8_3.noarch                              mecab-0.996-1.module_el8.2.0+493+63b41e36.9.x86_64
+  mysql-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                             mysql-common-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64
+  mysql-errmsg-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64                      mysql-server-8.0.21-1.module_el8.2.0+493+63b41e36.x86_64
+  protobuf-lite-3.5.0-13.el8.x86_64
+
+Complete!
+[root@osboxes ~]#
+
+[root@osboxes ~]# systemctl start mysqld
+
+[root@osboxes ~]# systemctl enable mysqld
+Created symlink /etc/systemd/system/multi-user.target.wants/mysqld.service → /usr/lib/systemd/system/mysqld.service.
+
+[root@osboxes ~]# mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Connecting to MySQL using a blank password.
+
+VALIDATE PASSWORD COMPONENT can be used to test passwords
+and improve security. It checks the strength of password
+and allows the users to set only those passwords which are
+secure enough. Would you like to setup VALIDATE PASSWORD component?
+
+Press y|Y for Yes, any other key for No: y
+
+There are three levels of password validation policy:
+
+LOW    Length >= 8
+MEDIUM Length >= 8, numeric, mixed case, and special characters
+STRONG Length >= 8, numeric, mixed case, special characters and dictionary                  file
+
+Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: 0
+Please set the password for root here.
+
+New password:
+
+Re-enter new password:
+
+Estimated strength of the password: 50
+Do you wish to continue with the password provided?(Press y|Y for Yes, any other key for No) : y
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) :
+
+ ... skipping.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) :
+
+ ... skipping.
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) :
+
+ ... skipping.
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) :
+
+ ... skipping.
+All done!
+
+[root@mysqldbhost ~]# mysqladmin -u root -p version
+Enter password:
+mysqladmin  Ver 8.0.21 for Linux on x86_64 (Source distribution)
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Server version          8.0.21
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /var/lib/mysql/mysql.sock
+Uptime:                 6 min 50 sec
+
+Threads: 2  Questions: 2  Slow queries: 0  Opens: 116  Flush tables: 3  Open tables: 37  Queries per second avg: 0.004
+
+
+[root@osboxes ~]# mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.21 Source distribution
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW GLOBAL VARIABLES LIKE 'PORT';
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| port          | 3306  |
++---------------+-------+
+1 row in set (0.01 sec)
+
+mysql> quit
+Bye
+
+[root@mysqldbhost ~]# echo "bind-address = 0.0.0.0" >> /etc/my.cnf
+[root@mysqldbhost ~]# cat /etc/my.cnf
+#
+# This group is read both both by the client and the server
+# use it for options that affect everything
+#
+[client-server]
+
+#
+# include all files from the config directory
+#
+!includedir /etc/my.cnf.d
+bind-address = 0.0.0.0
+
+[root@osboxes ~]# reboot
+
+[root@mysqldbhost ~]# mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.21 Source distribution
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE HRDATABASE;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> CREATE USER 'PBPUBLIC'@'localhost' IDENTIFIED WITH mysql_native_password BY 'PBPUBLIC@a1';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, DROP, ALTER, CREATE TEMPORARY TABLES, LOCK TABLES ON HRDATABASE.* TO 'PBPUBLIC'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> GRANT FILE ON *.* TO 'PBPUBLIC'@'localhost';
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> SELECT user();
++----------------+
+| user()         |
++----------------+
+| root@localhost |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> USE HRDATABASE
+Database changed
+mysql> CREATE TABLE EMPLOYEE
+    ->    (
+    ->       ID INT ,
+    ->       NAME CHARACTER (100) ,
+    ->       TITLE CHARACTER (100) ,
+    ->       SALARY CHARACTER (50) ,
+    ->       BONUS_STRUCTURE CHARACTER (50) ,
+    ->       TIME_OFF INT ,
+    ->       SICK_TIME INT ,
+    ->       HEALTH_PLAN CHARACTER (100) ,
+    ->       VISION_PLAN CHARACTER (100) ,
+    ->       DENTAL_PLAN CHARACTER (100) ,
+    ->       PLAN INT ,
+    ->       SAVINGS INT
+    ->    );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE WLS_CATALOG_ITEMS
+    ->    (
+    ->       SKU CHARACTER (50) ,
+    ->       NAME CHARACTER (100) ,
+    ->       DESCRIPTION CHARACTER (100) ,
+    ->       PRICE DOUBLE PRECISION ,
+    ->       INV_AMOUNT INT ,
+    ->       CATEGORY CHARACTER (100)
+    ->    );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE WLS_CLIENT_INFO
+    ->    (
+    ->       CLIENT_ID CHARACTER (100) ,
+    ->       NAME CHARACTER (100) ,
+    ->       EMAIL CHARACTER (100)
+    ->    );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(1,'Chris Montgomery','Manager','70,000','25% Quarterly',15,5,'Blue Cross and Blue Shield','Aetna Vision','Delta Dental',25000,12000);
+INSERT INTO EMPLOYEE VALUES(5,'Jennifer Ackerman','Manager','75,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Aetna Dental',18000,23000);
+INSERT INTO EMPLOYEE VALUES(6,'Jill Champagne','Senior Programmer','60,000','20% Quarterly',10,5,'Mathew Thornton Health Plan','Aetna Vision','Delta Dental',12000,16000);
+INSERT INTO EMPLOYEE VALUES(7,'Katherine Frederick','Manager','70,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Aetna Dental',25000,6000);
+INSERT INTO EMPLOYEE VALUES(8,'Michael Fuller','Programmer','50,000','15% Quarterly',10,5,'Blue Cross and Blue Shield','Aetna Vision','Delta Dental',13500,9500);
+INSERT INTO EMPLOYEE VALUES(9,'Ryan Lewis','Programmer','52,000','15% Quarterly',10,5,'Blue Cross and Blue Shield','Aetna Vision','Delta Dental',16000,7600);
+INSERT INTO EMPLOYEE VALUES(10,'Thomas Bernard','Manager','65,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Delta Dental',28520,1480);Query OK, 1 row affected (0.02 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(2,'Doris Sylvester','Programmer','55,000','15% Quarterly',10,5,'Blue Cross and Blue Shield','Aetna Vision','Aetna Dental',22000,16000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(3,'George Garcia','Senior Programmer','62,000','20% Quarterly',10,5,'Mathew Thornton Health Plan','Aetna Vision','Delta Dental',18000,9600);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(4,'Jeff Hodgkins','Manager','75,000','25% Quarterly',15,5,'Blue Cross and Blue Shield','Aetna Vision','Aetna Dental',15000,22000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(5,'Jennifer Ackerman','Manager','75,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Aetna Dental',18000,23000);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(6,'Jill Champagne','Senior Programmer','60,000','20% Quarterly',10,5,'Mathew Thornton Health Plan','Aetna Vision','Delta Dental',12000,16000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(7,'Katherine Frederick','Manager','70,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Aetna Dental',25000,6000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(8,'Michael Fuller','Programmer','50,000','15% Quarterly',10,5,'Blue Cross and Blue Shield','Aetna Vision','Delta Dental',13500,9500);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(9,'Ryan Lewis','Programmer','52,000','15% Quarterly',10,5,'Blue Cross and Blue Shield','Aetna Vision','Delta Dental',16000,7600);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO EMPLOYEE VALUES(10,'Thomas Bernard','Manager','65,000','25% Quarterly',15,5,'Mathew Thornton Health Plan','Aetna Vision','Delta Dental',28520,1480);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('101','baseball cap','black baseball cap with company logo',19.99,44,'Clothing');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('102','polo shirt','white polo shirt with company logo',29.99,77,'Clothing');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('103','pens','a box of pens that have the company logo',5.99,100,'Office Supplies');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('104','paper','pads of legal paper with the company logo',9.99,120,'Office Supplies');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('105','beach towel','an oversized beach towel with the company logo',14.99,88,'Misc');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CATALOG_ITEMS VALUES('106','sweatshirt','grey sweatshirt with the company logo',39.99,7,'Clothing');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CLIENT_INFO VALUES('id2','Homer Simpson','homer.simpson@springfield.com');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO WLS_CLIENT_INFO VALUES('id3','Elmer Fudd','elmer.fudd@warnerbrothers.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO WLS_CLIENT_INFO VALUES('id4','Your Name','Your Email');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from WLS_CLIENT_INFO
+    -> ;
++-----------+---------------+-------------------------------+
+| CLIENT_ID | NAME          | EMAIL                         |
++-----------+---------------+-------------------------------+
+| id2       | Homer Simpson | homer.simpson@springfield.com |
+| id3       | Elmer Fudd    | elmer.fudd@warnerbrothers.com |
+| id4       | Your Name     | Your Email                    |
++-----------+---------------+-------------------------------+
+3 rows in set (0.00 sec)
+
+
+mysql>  CREATE USER 'PBPUBLIC'@'192.168.1.196' IDENTIFIED WITH mysql_native_password BY 'PBPUBLIC@a1';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, DROP, ALTER, CREATE TEMPORARY TABLES, LOCK TABLES ON HRDATABASE.* TO 'PBPUBLIC'@'192.168.1.196';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> GRANT FILE ON *.* TO 'PBPUBLIC'@'192.168.1.196';
+Query OK, 0 rows affected (0.00 sec)
+
+
+
